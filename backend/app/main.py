@@ -58,6 +58,18 @@ async def debug_gemini():
     except Exception as e:
         return {"exception": str(e)}
 
+@app.get("/api/debug/briefing")
+async def debug_briefing():
+    from app.agent import _build_briefing
+    try:
+        result = await _build_briefing({
+            "origin_country": "Kuwait",
+            "destination_country": "Qatar",
+        })
+        return {"success": True, "cards": [r.model_dump() for r in result]}
+    except Exception as e:
+        return {"success": False, "error": str(e), "error_type": type(e).__name__}
+    
 @app.get("/api/agent/status")
 async def agent_status():
     if _last_run is None:
