@@ -72,7 +72,7 @@ async def debug_briefing():
         "Return ONLY the JSON array, no markdown fences, no preamble."
     )
     try:
-        async with httpx.AsyncClient(timeout=15.0) as client:
+        async with httpx.AsyncClient(timeout=45.0) as client:
             resp = await client.post(
                 "https://generativelanguage.googleapis.com/v1beta/models/"
                 f"gemini-flash-latest:generateContent?key={key}",
@@ -87,7 +87,7 @@ async def debug_briefing():
             except Exception as parse_err:
                 return {"stage": "parse_failed", "error": str(parse_err), "raw_text": raw_text, "cleaned": cleaned}
     except Exception as e:
-        return {"stage": "request_failed", "error": str(e)}
+        return {"stage": "request_failed", "error": str(e), "error_type": type(e).__name__}
     
 @app.get("/api/agent/status")
 async def agent_status():
