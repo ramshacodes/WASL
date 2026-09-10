@@ -38,6 +38,26 @@ async def health():
             "gemini_key_present": bool(os.getenv("GEMINI_API_KEY")),
         }
 
+@app.get("/api/debug/gemini")
+async def debug_gemini():
+    import httpx
+    key = os.getenv("GEMINI_API_KEY", "")
+    if not key:
+        return {"error": "No key found"}
+    try:
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            resp = await client.post(
+                "https://generativelanguage.googleapis.com/v1beta/models/"
+                f"gemini-2.0-flash:generateContent?key={key}",
+                json={"contents": [{"parts": [{"text": "Say hello in 5 words."}]}]},
+            )
+            return {
+                "status_code": resp.status_code,
+                "body": resp.text[:1000],
+            }
+    except Exception as e:
+        return {"exception": str(e)}
+
 @app.get("/api/agent/status")
 async def agent_status():
     if _last_run is None:
