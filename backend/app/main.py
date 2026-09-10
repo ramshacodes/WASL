@@ -32,8 +32,11 @@ _last_run: dict | None = None
 
 @app.get("/api/health")
 async def health():
-    return {"status": "ok", "demo_mode": DEMO_MODE}
-
+    return {
+            "status": "ok",
+            "demo_mode": DEMO_MODE,
+            "gemini_key_present": bool(os.getenv("GEMINI_API_KEY")),
+        }
 
 @app.get("/api/agent/status")
 async def agent_status():
