@@ -60,15 +60,34 @@ async def debug_gemini():
 
 @app.get("/api/debug/briefing")
 async def debug_briefing():
-    from app.agent import _build_briefing
+    import httpx, json, os
+    key = os.getenv("GEMINI_API_KEY", "")
+    prompt = (
+        "You are WASL, a proactive cross-border travel assistant. A traveler just "
+        "crossed from Kuwait into Qatar. "
+        "Write a short, genuinely useful personalized briefing as a JSON array of exactly "
+        "7 objects, each with keys: category (one of connectivity, emergency, transportation, "
+        "payments, local_services, explore, local_context), icon (a single emoji), title, "
+        "and content (1-2 concise sentences, specific and practical, no fluff). "
+        "Return ONLY the JSON array, no markdown fences, no preamble."
+    )
     try:
-        result = await _build_briefing({
-            "origin_country": "Kuwait",
-            "destination_country": "Qatar",
-        })
-        return {"success": True, "cards": [r.model_dump() for r in result]}
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            resp = await client.post(
+                "https://generativelanguage.googleapis.com/v1beta/models/"
+                f"gemini-flash-latest:generateContent?key={key}",
+                json={"contents": [{"parts": [{"text": prompt}]}]},
+            )
+            data = resp.json()
+            raw_text = data["candidates"][0]["content"]["parts"][0]["text"]
+            cleaned = raw_text.strip().removeprefix("```json").removeprefix("```").removesuffix("```").strip()
+            try:
+                parsed = json.loads(cleaned)
+                return {"stage": "parse_success", "parsed": parsed}
+            except Exception as parse_err:
+                return {"stage": "parse_failed", "error": str(parse_err), "raw_text": raw_text, "cleaned": cleaned}
     except Exception as e:
-        return {"success": False, "error": str(e), "error_type": type(e).__name__}
+        return {"stage": "request_failed", "error": str(e)}
     
 @app.get("/api/agent/status")
 async def agent_status():
