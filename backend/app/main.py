@@ -48,7 +48,7 @@ async def debug_gemini():
         async with httpx.AsyncClient(timeout=15.0) as client:
             resp = await client.post(
                 "https://generativelanguage.googleapis.com/v1beta/models/"
-                f"gemini-2.0-flash:generateContent?key={key}",
+                f"gemini-flash-latest:generateContent?key={key}",
                 json={"contents": [{"parts": [{"text": "Say hello in 5 words."}]}]},
             )
             return {
