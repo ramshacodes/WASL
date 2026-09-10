@@ -64,7 +64,7 @@ export default function Home() {
       );
       setPhase("idle");
     }
-  }, []);
+  }, [destination]);
 
   const locationVerified = visibleEvents.some(
     (e) => e.kind === "tool_result" && e.tool === "Location Verification"
