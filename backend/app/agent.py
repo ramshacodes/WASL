@@ -347,7 +347,7 @@ async def _build_briefing(state: AgentState) -> list[BriefingCard]:
             text = text.strip().removeprefix("```json").removeprefix("```").removesuffix("```").strip()
             parsed = json.loads(text)
             return [BriefingCard(**item) for item in parsed]
-    except Exception:
+    except Exception as e:
         return fallback
 
 
