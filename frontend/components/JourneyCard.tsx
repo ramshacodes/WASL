@@ -23,7 +23,7 @@ export default function JourneyCard({
 }: Props) {
   const currentCountry = locationVerified ? `${destination.country} ${destination.flag}` : `${originCountry} ${originFlag}`;
   const travelStatus = phase === "idle" ? "Monitoring" : locationVerified ? "Transition confirmed" : "Evaluating transition";
-  const locked = phase !== "idle";
+  const locked = phase === "transitioning";
 
   return (
     <section className="rounded-2xl border border-navy-700 bg-navy-800/60 p-6 shadow-card">
