@@ -338,7 +338,7 @@ async def _build_briefing(state: AgentState) -> list[BriefingCard]:
         async with httpx.AsyncClient(timeout=15.0) as client:
             resp = await client.post(
                 "https://generativelanguage.googleapis.com/v1beta/models/"
-                f"gemini-3.6-flash:generateContent?key={GEMINI_API_KEY}",
+                f"gemini-flash-latest:generateContent?key={GEMINI_API_KEY}",
                 json={"contents": [{"parts": [{"text": prompt}]}]},
             )
             resp.raise_for_status()
